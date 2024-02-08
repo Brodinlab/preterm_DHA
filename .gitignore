@@ -49,8 +49,6 @@ po/*~
 rsconnect/
 
 #folders
-data/
-figures/
 
 # misc
 .DS_Store
