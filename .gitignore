@@ -49,6 +49,7 @@ po/*~
 rsconnect/
 
 #folders
+data/
 
 # misc
 .DS_Store
