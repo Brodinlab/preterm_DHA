@@ -6,8 +6,7 @@ This repo is used for reproducing the figures included in the paper (*add link h
 
 # Contents
 
-- ```data/``` contains the data needed for reproducing the figures unless specified otherwise
-  - data for Figure 7c-e can be downloaded here (*add link here*) and should be put under the folder ```data/``` while running the script.
+- ```data/``` data needed for reproducing the figures can be downloaded here (*add link here*) and put under the folder ```data/``` while running the script.
   - the raw .fcs data of Mass Cytometry can be found in Flow Repository with the accession ID: (*need update*)
 - ```src/``` contains the scirpts to reproduce the figures and is organized by each figure.
 - ```figures/``` contains the expected figures.
