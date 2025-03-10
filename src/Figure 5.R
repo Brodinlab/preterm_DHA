@@ -50,15 +50,17 @@ lapply(majorpop_list, function(x) {
 # Figure 5c ----------------
 lapply(majorpop_list, function(x) {
   d <- data.merge %>% 
-    filter(merge2 == x, PN_days >80, milk_group != 'Term control') 
-  d.stats <- d %>% t_test(freq ~ milk_group, p.adjust.method = 'fdr') %>% add_xy_position(x = 'milk_group')
+    filter(merge2 == x, PN_days >80) 
+  d.stats <- d %>%
+    t_test(freq ~ milk_group, p.adjust.method = "fdr") %>%
+    add_xy_position(x = "milk_group")
   ggplot(d, aes(x=milk_group, y=freq, color=milk_group)) +
     geom_boxplot(outlier.shape = NA) +
     geom_jitter(size=0.3)+
     stat_pvalue_manual(d.stats, tip.length = 0.01, label='p')+
     scale_colour_manual(values=wes_palette("Darjeeling1")) +
     ggtitle(x)+
-    theme_bw()
+    theme_pubr()
 }) %>% ggarrange(plotlist = ., ncol = 2, nrow = 3, common.legend = T) %>%
   ggexport(filename='figures/Figure 5/5c.pdf', width = 10, height = 12)
 
@@ -120,6 +122,13 @@ sample_info <- read_csv(file.path('data', 'sample_info_refined.csv'))%>%
 df <- left_join(olink %>% filter(visit_name == 'PMA 40 weeks'),
                 sample_info %>% select(Subject_ID, preterm_class) %>% distinct(), by='Subject_ID') %>%
   tidyr::pivot_longer(cols = -c(Subject_ID, visit_name, Breastmilk_group, preterm_class))
+
+p_stats <- df %>%
+  group_by(name) %>%
+  wilcox_test(value ~ Breastmilk_group) %>%
+  adjust_pvalue(method = "BH")
+
+
 logFC = df %>% group_by(name, Breastmilk_group) %>% summarise(value=mean(value, na.rm=T)) %>% group_by(name) %>%
   summarise(fc = value[2]-value[1]) %>%
   arrange(fc)

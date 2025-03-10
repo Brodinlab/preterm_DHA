@@ -27,14 +27,17 @@ data.merge <- plyr::rbind.fill(data,cdata)
 
 # Figure 4b ----------------
 lapply(majorpop_list, function(x) {
-  data.merge %>% 
+  data.merge %>%
     filter(merge2 == x) %>%
-    ggplot(aes(x=PN_days, y=freq, color=class)) +
-    geom_point(size=0.3, alpha=0.3)+
-    geom_line(aes(group = Subject_ID), alpha=0.3) +
-    geom_smooth(method = 'loess', span=1.5) + 
-    scale_x_continuous(trans='log1p',
-                       breaks=c(0,1,3,7,14,28,100)) +
+    mutate(class = factor(class, levels = c("22-25w", "Term", "25-28w"))) %>%
+    ggplot(aes(x = PN_days, y = freq, color = class)) +
+    geom_point(size = 0.3, alpha = 0.3) +
+    geom_line(aes(group = Subject_ID), alpha = 0.3) +
+    geom_smooth(method = "loess", span = 1.5) +
+    scale_x_continuous(
+      trans = "log1p",
+      breaks = c(0, 1, 3, 7, 14, 28, 100)
+    ) +
     scale_colour_manual(values=wes_palette("Darjeeling1")) +
     ggtitle(x)+
     theme_bw()
@@ -43,18 +46,21 @@ lapply(majorpop_list, function(x) {
 
 # Figure 4c ----------------
 lapply(majorpop_list, function(x) {
-  d <- data.merge %>% 
-    filter(merge2 == x, PN_days >80) 
-  d.stats <- d %>% t_test(freq ~ class, p.adjust.method = 'fdr') %>% add_xy_position(x = 'class')
-  ggplot(d, aes(x=class, y=freq, color=class)) +
+  d <- data.merge %>%
+    filter(merge2 == x, PN_days > 80)
+  d.stats <- d %>%
+    t_test(freq ~ class, p.adjust.method = "fdr") %>%
+    add_xy_position(x = "class")
+  ggplot(d, aes(x = class, y = freq, color = class)) +
     geom_boxplot(outlier.shape = NA) +
-    geom_jitter(size=0.3)+
-    stat_pvalue_manual(d.stats, tip.length = 0.01, label='p.adj')+
-    scale_colour_manual(values=wes_palette("Darjeeling1")) +
-    ggtitle(x)+
-    theme_bw()
-}) %>% ggarrange(plotlist = ., ncol = 2, nrow = 3, common.legend = T) %>%
-  ggexport(filename='figures/Figure 4/4c.pdf', width = 10, height = 12)
+    geom_jitter(size = 0.3) +
+    stat_pvalue_manual(d.stats, tip.length = 0.01, label = "p.adj") +
+    scale_colour_manual(values = wes_palette("Darjeeling1")) +
+    ggtitle(x) +
+    theme_pubr()
+}) %>%
+  ggarrange(plotlist = ., ncol = 2, nrow = 3, common.legend = T) %>%
+  ggexport(filename = "figures/Figure 4/4c.pdf", width = 10, height = 12)
 
 # Figure 4d ----------------
 data.wide <- data.merge %>%
@@ -95,6 +101,12 @@ sample_info <- read_csv(file.path('data', 'sample_info_refined.csv'))%>%
 df <- left_join(olink %>% filter(visit_name == 'PMA 40 weeks'),
                 sample_info %>% select(Subject_ID, preterm_class) %>% distinct(), by='Subject_ID') %>%
   tidyr::pivot_longer(cols = -c(Subject_ID, visit_name, Breastmilk_group, preterm_class))
+
+p_stats <- df %>%
+  group_by(name) %>%
+  wilcox_test(value ~ preterm_class) %>%
+  adjust_pvalue(method = 'BH')
+
 logFC = df %>% group_by(name, preterm_class) %>% summarise(value=mean(value, na.rm=T)) %>% group_by(name) %>%
   summarise(fc = value[2]-value[1]) %>%
   arrange(fc)
@@ -111,5 +123,4 @@ logFC %>% mutate(label=if_else(name %in% unlist(top_fc_list), name, '')) %>%
         axis.ticks.x = element_blank()) + 
   ylab('log fold change (25-28w vs 22-25w)')
 ggsave('figures/Figure 4/4e.pdf')
-
 

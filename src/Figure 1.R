@@ -41,7 +41,7 @@ ggraph(l_g) +
 ggsave(filename = 'figures/Figure 1/1b.pdf', width = 16, height = 15)
 
 # Figure 1c ----------------
-data <- read_tsv('data/flowsom_clustered_Tcell.txt')
+data <- read_tsv('data/flowsom_clustered_Tcell.txt') %>% filter(subtype3 != 'Exclude')
 panel <- colnames(data)[1:49]
 q99 <- quantile(as.matrix(data[,1:length(panel)]), 0.99)
 
@@ -59,9 +59,9 @@ pheatmap::pheatmap(as.matrix(data[,1:length(panel)]),
 
 
 # Figure 1d ----------------
-data <- read_tsv('data/flowsom_clustered.txt')
+data <- read_tsv("data/flowsom_clustered.txt")
 panel <- colnames(data)[1:49]
-data <- data %>% filter(subtype1 != 'T cell')
+data <- data %>% filter(subtype1 != 'T cell', )
 q99 = quantile(as.matrix(data[,1:length(panel)]), 0.99)
 pheatmap::pheatmap(as.matrix(data[,1:length(panel)]),
                    color = paletteer_d("rcartocolor::PurpOr", n = 100, type = 'continuous'),
@@ -103,14 +103,14 @@ g1 <- data.frame(name=rownames(cor_m), cor = cor_m[,'V1']) %>%
   theme_bw()
 
 cor_m <- df %>% left_join(m_fill0) %>% select(V2, all_of(subpop_list)) %>% cor()
-g2 <- data.frame(name=rownames(cor_m), cor = cor_m[,'V2']) %>%
-  filter(name != 'V2') %>%
+g2 <- data.frame(name = rownames(cor_m), cor = cor_m[, "V2"]) %>%
+  filter(name != "V2") %>%
   arrange(cor) %>%
-  mutate(name = factor(name, levels=.$name)) %>%
-  ggplot(aes(x=cor, y=name)) +
-  geom_segment(aes(x=0, xend=cor, y=name, yend=name), color="grey") +
-  geom_point(color="orange", size=4) +
-  ggtitle('MDS2') + 
+  mutate(name = factor(name, levels = .$name)) %>%
+  ggplot(aes(x = cor, y = name)) +
+  geom_segment(aes(x = 0, xend = cor, y = name, yend = name), color = "grey") +
+  geom_point(color = "orange", size = 4) +
+  ggtitle("MDS2") +
   theme_bw()
 ggarrange(g1, g2)
 ggsave('figures/Figure 1/1f.pdf', width = 8, height=8)

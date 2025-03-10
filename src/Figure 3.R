@@ -103,7 +103,7 @@ raw_cor <- cor(data[,olink_panel], data[,freq_names], method = 'pearson', use = 
 cor <- raw_cor[apply(abs(raw_cor) > 0.3, 1, any), c('B cell', 'NK', 'Neutrophils', 'Monocytes', 'CD4 T', 'CD8 T')] # filter out cytokine with no correlation at all
 
 lmer_list <- lapply(rownames(cor), function(x){
-  lmer(as.formula(paste0('`', x, '` ~ `B cell` + `CD4 T` + `CD8 T` + `NK` + `Neutrophils` + `Monocytes` + (1|PN_days) + (1|Subject_ID)')), data.scale)
+  lmer(as.formula(paste0("`", x, "` ~ `B cell` + `CD4 T` + `CD8 T` + `NK` + `Neutrophils` + `Monocytes` + (1|PN_days) + (1|Subject_ID)")), data.scale)
 })
 names(lmer_list) <- rownames(cor)
 lmer_coeffsig <- lapply(lmer_list, function(m) {
@@ -120,7 +120,4 @@ ggplot(df, aes(x=subpop, y=name, size=-log2(padj_sig), color=median)) + geom_poi
                         mid = "white",
                         high = scales::muted("red"))+
   labs(color='coefficient')
-ggsave('figures/Figure 3/3f.pdf')
-
-
-
+ggsave("figures/Figure 3/3f.pdf")
