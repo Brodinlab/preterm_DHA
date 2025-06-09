@@ -6,7 +6,7 @@ This repo is used for reproducing the figures included in the paper (*add link h
 
 # Contents
 
-- ```data/``` data needed for reproducing the figures can be downloaded at [Mendeley data](https://data.mendeley.com/datasets/fpc6ypbsts/1) and put under the folder ```data/``` while running the script.
+- ```data/``` data needed for reproducing the figures can be downloaded at [Mendeley data](https://data.mendeley.com/datasets/fpc6ypbsts) and put under the folder ```data/``` while running the script.
 - ```src/``` contains the scirpts to reproduce the figures and is organized by each figure.
 - ```figures/``` contains the expected figures.
 
